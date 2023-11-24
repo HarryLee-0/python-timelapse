@@ -13,6 +13,7 @@ if input("") in ["O","o"]:
     print("Options:")
     time_interval = float(input(" | Time Interval In Seconds (default = 1): "))
     fps = int(input(" | FPS (default = 30): "))
+    print(f" | 1 timelapse second = {fps*time_interval} real seconds (default = 30)")
     print("Options Set.\n")
 
 print("Press Page Down to stop timelapse.")
