@@ -1,4 +1,3 @@
-# credits: chatgpt for some sections
 import time, cv2, os, numpy
 from PIL import ImageGrab
 from pynput.keyboard import Listener,Key
