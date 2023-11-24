@@ -7,7 +7,7 @@ time_interval = 1  # in seconds
 fps = 30
 images = []
 
-# Continuously take screenshots until 'Enter' is pressed
+# Options Menu
 print("Press Enter to start. Press O and Enter for options.")
 if input("") in ["O","o"]:
     print("Options:")
@@ -25,7 +25,7 @@ def press(key):
 listener = Listener(on_press = press)
 listener.start()
 
-# Screenshot loop
+# Continuously take screenshots until 'Enter' is pressed
 while True:
     # Take screenshot
     im = ImageGrab.grab()
