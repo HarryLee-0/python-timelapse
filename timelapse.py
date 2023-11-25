@@ -1,6 +1,5 @@
 import time, cv2, os, numpy, threading
 from PIL import ImageGrab
-from pynput.keyboard import Listener,Key
 from tkinter import *
 from tkinter import ttk
 
@@ -11,11 +10,11 @@ images=[]
 
 # Options Window
 def conversionupdater():
-    global fps, time_interval
+    global fps, time_interval, running
     while running==True:
         try:
             time_interval=float("0"+entry.get())
-            fps=float("0"+entry2.get())
+            fps=int(round(float("0"+entry2.get())))
             conversion.config(text=f"1 timelapse second={round(fps*time_interval*100)/100} real seconds")
         except:
             pass        
@@ -43,10 +42,15 @@ conversionupdate.start()
 root.mainloop()
 running=False
 
+if time_interval==0:
+    time_interval=0.01
+if fps==0:
+    fps=1
+
 
 # Timelapse Window
 def timelapse():
-    global images
+    global start, end, images, fps, running 
     # Screenshot loop
     start=time.time()
     while running==True:
@@ -87,7 +91,7 @@ running=False
 
 # Storage and compile images into a video
 def presaving():
-    global video_name, directory
+    global video_name, directory, running
     while running==True:
         try:
             video_name=str(entry.get())+".mp4"
@@ -101,7 +105,7 @@ window=ttk.Frame(root, padding=10)
 window.grid()
 ttk.Label(window, text="Saving").grid(column=1,row=0)
 ttk.Label(window, text="Timelapse Has Ended!").grid(column=1,row=0)
-ttk.Button(window, text="End Timelapse",command=root.destroy).grid(column=1, row=10)
+ttk.Button(window, text="Save",command=root.destroy).grid(column=1, row=10)
 ttk.Label(window, text="Stats:").grid(column=1,row=2)
 ttk.Label(window, text=f"{len(images)} frames taken").grid(column=1,row=3)
 ttk.Label(window, text=f"Timelapse {round((len(images)/fps)*100)/100} seconds long").grid(column=1,row=4)
@@ -138,11 +142,10 @@ video_name=os.path.join(video_directory, video_name)
 
 # Saving
 def saving():
-    global start, end, video, images
+    global start, end, video, images, root, video_name, fps, running
     start=time.time()
     height, width, layers=images[0].shape
     video=cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
-
     for image in images:
         video.write(image)
 
@@ -150,8 +153,16 @@ def saving():
         cv2.destroyAllWindows()
     except:
         pass
-    video.release()
+    try:
+        video.release()
+    except:
+        video_name=time.time()
+        video=cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
+        for image in images:
+            video.write(image)
+
     end=time.time()
+    root.destroy()
 
 running=True
 root=Tk()
@@ -167,8 +178,15 @@ saver=threading.Thread(target=saving)
 saver.daemon=True
 saver.start()
 root.mainloop()
+running=False
 
-
-savedas.config(text=f"Video saved as {video_name} as {round((len(images)/fps)*100)/100} seconds. {len(images)} frames compiled in {round((end-start)*1000)/1000} seconds at {fps} fps.")
-ttk.Button(window, text="Close",command=root.destroy).grid(column=1,row=3)
+# Finish Screen
+running=True
+root=Tk()
+window=ttk.Frame(root, padding=10)
+window.grid()
+ttk.Label(window, text="Finished Saving!").grid(column=1,row=0)
+ttk.Label(window, text=f"Video saved as {video_name} as {round((len(images)/fps)*100)/100} seconds. {len(images)} frames compiled in {round((end-start)*1000)/1000} seconds at {fps} fps.").grid(column=1,row=1)
+ttk.Button(window, text="Close",command=root.destroy).grid(column=1,row=2)
+root.mainloop()
 running=False
