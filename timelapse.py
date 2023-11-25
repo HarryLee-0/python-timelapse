@@ -113,7 +113,7 @@ ttk.Label(window, text=f"Timelapse {round((len(images)/FPS)*100)/100} seconds lo
 ttk.Label(window, text="Name: (default=time)").grid(column=1,row=5)
 entry=ttk.Entry(window)
 entry.grid(column=1,row=6)
-entry.insert(0,str(time.time()))
+entry.insert(0,str(round(time.time())))
 ttk.Label(window, text="User Folder Name: (deafult=downloads)").grid(column=1,row=7)
 entry2=ttk.Entry(window)
 entry2.grid(column=1,row=8)
@@ -155,7 +155,7 @@ def saving():
     try:
         video.release()
     except:
-        video_name=str(time.time())
+        video_name=str(round(time.time()))
         video=cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), FPS, (width, height))
         for image in images:
             video.write(image)
