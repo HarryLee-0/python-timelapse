@@ -95,7 +95,7 @@ def presaving():
     global video_name, directory, running3
     while running3==True:
         try:
-            video_name=str(entry.get())+".mp4"
+            video_name=str(entry.get())+"("+str(FPS)+"F"+str(TIME_INTERVAL)+"T)"+".mp4"
             directory=str(entry2.get())
         except:
             pass
